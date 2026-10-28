@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1b1440">
+    <title>Homeric 3D: Legends of Troy</title>
+    <!-- Font online opsional; tanpa internet otomatis memakai font sistem -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sky" aria-hidden="true"><div class="sky-glow"></div><div class="sky-stars"></div></div>
+    <canvas id="world-canvas" aria-label="Dunia 3D para pahlawan Homer"></canvas>
+
+    <!-- ===================== LOADING ===================== -->
+    <section id="loading" class="screen">
+        <div class="panel glass loading-card">
+            <div class="logo-mark">Η</div>
+            <h1>Homeric 3D<span>Legends of Troy</span></h1>
+            <div class="bar"><i id="loading-bar"></i></div>
+            <p id="loading-text">Menyusun balok para pahlawan…</p>
+        </div>
+    </section>
+
+    <!-- ===================== MASUK / DAFTAR ===================== -->
+    <section id="auth" class="screen hidden">
+        <div class="panel glass auth-card">
+            <div class="logo-mark">Η</div>
+            <h1>Homeric 3D<span>Legends of Troy</span></h1>
+            <div class="tabs" role="tablist">
+                <button type="button" id="tab-login" class="tab on" role="tab">Masuk</button>
+                <button type="button" id="tab-register" class="tab" role="tab">Daftar Baru</button>
+            </div>
+            <form id="auth-form" autocomplete="off">
+                <label for="auth-user">Username</label>
+                <input id="auth-user" maxlength="20" placeholder="contoh: joshua" required>
+                <label for="auth-pass">Kata sandi</label>
+                <input id="auth-pass" type="password" maxlength="40" placeholder="minimal 4 karakter" required>
+                <p id="auth-msg" class="form-msg" aria-live="polite"></p>
+                <button id="auth-go" class="btn btn-primary wide" type="submit">Masuk</button>
+            </form>
+            <div id="auth-recent" class="recent"></div>
+            <small class="muted">Akun & progres tersimpan di browser komputer ini. Pindah komputer? Menu → 💾 Simpan progres ke file.</small>
+        </div>
+    </section>
+
+    <!-- ===================== BUAT KARAKTER ===================== -->
+    <section id="creator" class="creator hidden">
+        <div class="panel glass creator-card">
+            <span class="eyebrow">LANGKAH PERTAMA</span>
+            <h2>Halo, pengembara! Siapa namamu?</h2>
+            <input id="cr-name" maxlength="18" placeholder="Ketik nama karaktermu">
+            <div class="cr-row"><span>Warna kulit</span><div class="swatches" id="cr-skin"></div></div>
+            <div class="cr-row"><span>Rambut</span><div class="swatches" id="cr-hair"></div></div>
+            <div class="cr-row"><span>Gaya rambut</span><div class="chips" id="cr-hairstyle"></div></div>
+            <div class="cr-row"><span>Jubah & jambul</span><div class="swatches" id="cr-cape"></div></div>
+            <div class="cr-row"><span>Tutup kepala</span><div class="chips" id="cr-helm"></div></div>
+            <div class="cr-row"><span>Dewa pelindung</span><div class="chips" id="cr-patron"></div></div>
+            <div class="cr-row"><span>Gaya bertarung</span><div class="chips" id="cr-stance"></div></div>
+            <p id="cr-msg" class="form-msg"></p>
+            <button id="cr-go" class="btn btn-primary wide" type="button">Lanjut ▶</button>
+        </div>
+    </section>
+
+    <!-- ===================== PILIH MODE ===================== -->
+    <section id="mode" class="screen dim hidden">
+        <div class="mode-wrap">
+            <h2 id="mode-title">Mau main apa hari ini?</h2>
+            <div class="mode-grid">
+                <button type="button" class="mode-card glass" id="mode-battle">
+                    <span class="mode-ico">⚔️</span><b>Mode Bertarung</b>
+                    <small>Tantang para pahlawan dalam duel 3D. Yang agresif akan mengejarmu! Kalahkan untuk mengisi Buku Sejarah.</small>
+                    <em id="mode-battle-prog"></em>
+                </button>
+                <button type="button" class="mode-card glass" id="mode-explore">
+                    <span class="mode-ico">🧭</span><b>Mode Jelajah</b>
+                    <small>Tanpa pertarungan. Jalan-jalan, temui tokoh-tokoh Homer, dengarkan kisahnya, dan kumpulkan semuanya.</small>
+                    <em id="mode-explore-prog"></em>
+                </button>
+            </div>
+            <button type="button" id="mode-logout" class="btn glass sm">↩ Ganti akun</button>
+        </div>
+    </section>
+
+    <!-- ===================== HUD DUNIA ===================== -->
+    <header id="hud" class="hud hidden">
+        <div class="hud-title glass">
+            <img id="hud-avatar" alt="">
+            <div><b id="hud-name">Pengembara</b><small id="hud-sub">Lv 1 · Mode Bertarung</small></div>
+        </div>
+        <div class="hud-progress glass" title="Tokoh yang sudah terkoleksi">
+            <span>📜 Terkoleksi</span><b id="progress-count">0/120</b>
+            <div class="mini-bar"><i id="progress-bar"></i></div>
+        </div>
+        <div class="hud-actions">
+            <button id="champion-btn" class="btn glass" type="button">👥 Tim</button>
+            <button id="book-btn" class="btn glass" type="button">📖 Buku Sejarah</button>
+            <button id="menu-btn" class="btn glass" type="button">☰ Menu</button>
+            <button id="sound-btn" class="btn glass icon" type="button" aria-label="Suara">🔊</button>
+        </div>
+    </header>
+    <canvas id="minimap" class="minimap hidden" width="180" height="180" aria-label="Peta"></canvas>
+    <div id="region-banner" class="region-banner"></div>
+    <div id="labels" class="labels"></div>
+
+    <aside id="lore-popup" class="lore-popup glass hidden" aria-live="polite">
+        <div class="lore-head">
+            <img id="lore-img" alt="">
+            <div>
+                <span id="lore-kubu" class="chip"></span>
+                <h3 id="lore-name"></h3>
+                <p id="lore-role"></p>
+            </div>
+        </div>
+        <p id="lore-text" class="lore-text"></p>
+        <div class="lore-foot"><span id="lore-matchup"></span><button id="lore-act" class="btn btn-primary sm" type="button">⚔ Tantang [E]</button></div>
+    </aside>
+
+    <div id="hint" class="hint glass hidden">WASD jalan · Shift lari · Spasi lompat · seret mouse untuk memutar kamera · E untuk menyapa</div>
+
+    <!-- Kontrol sentuh (HP/tablet) -->
+    <div id="touch" class="touch hidden">
+        <div id="stick" class="stick"><i id="stick-knob"></i></div>
+        <div class="touch-btns">
+            <button type="button" id="t-act" class="tbtn">E</button>
+            <button type="button" id="t-jump" class="tbtn">⤒</button>
+            <button type="button" id="t-run" class="tbtn">🏃</button>
+            <button type="button" id="t-fly" class="tbtn">🕊️</button>
+            <button type="button" id="t-down" class="tbtn hidden">⤓</button>
+        </div>
+    </div>
+
+    <!-- ===================== DUEL ===================== -->
+    <section id="duel-ui" class="duel-ui hidden">
+        <div class="duel-top">
+            <div class="fighter-card glass" id="p-card">
+                <img id="p-img" alt="">
+                <div class="fc-body">
+                    <div class="fc-name"><b id="p-name"></b><span id="p-tags"></span></div>
+                    <div class="meter hp"><i id="p-hp"></i><span id="p-hp-text"></span></div>
+                    <div class="meter st"><i id="p-st"></i><span id="p-st-text"></span></div>
+                    <div class="status" id="p-status"></div>
+                </div>
+            </div>
+            <div class="duel-vs"><span id="turn-label">GILIRANMU</span><b>VS</b><span id="turn-count">Ronde 1</span></div>
+            <div class="fighter-card glass enemy" id="e-card">
+                <img id="e-img" alt="">
+                <div class="fc-body">
+                    <div class="fc-name"><b id="e-name"></b><span id="e-tags"></span></div>
+                    <div class="meter hp"><i id="e-hp"></i><span id="e-hp-text"></span></div>
+                    <div class="meter st"><i id="e-st"></i><span id="e-st-text"></span></div>
+                    <div class="status" id="e-status"></div>
+                </div>
+            </div>
+        </div>
+        <div id="duel-log" class="duel-log glass"></div>
+        <div class="duel-bottom">
+            <div class="skill-grid" id="skill-grid"></div>
+            <button id="flee-btn" class="btn glass sm flee" type="button">↩ Kabur</button>
+        </div>
+    </section>
+    <div id="float-layer" class="float-layer"></div>
+
+    <section id="cutscene" class="cutscene hidden">
+        <div class="cut-inner">
+            <span class="cut-tag" id="cut-tag">PERTARUNGAN IKONIK</span>
+            <h2 id="cut-title"></h2>
+            <blockquote id="cut-quote"></blockquote>
+            <p id="cut-lesson"></p>
+            <small id="cut-source"></small>
+            <button id="cut-go" class="btn btn-primary" type="button">⚔ Mulai Duel</button>
+        </div>
+    </section>
+
+    <!-- ===================== KARTU HASIL / PERTEMUAN ===================== -->
+    <section id="result" class="screen dim hidden">
+        <div class="result-card glass" id="result-card">
+            <span class="result-tag" id="result-tag">KEMENANGAN</span>
+            <div class="result-main">
+                <button type="button" class="zoomable" id="result-zoom" title="Klik untuk memperbesar"><img id="result-img" alt=""><span>🔍 Perbesar</span></button>
+                <div class="result-info">
+                    <h2 id="result-title"></h2>
+                    <p id="result-text"></p>
+                </div>
+            </div>
+            <div id="result-body" class="result-body"></div>
+            <div class="result-lesson"><b id="result-status"></b><p id="result-pedoman"></p></div>
+            <div class="row">
+                <button id="result-again" class="btn glass" type="button">↻ Ulangi</button>
+                <button id="result-back" class="btn btn-primary" type="button">🌍 Lanjut Jelajah</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Foto besar -->
+    <section id="lightbox" class="lightbox hidden" role="dialog" aria-label="Foto tokoh">
+        <figure><img id="lightbox-img" alt=""><figcaption id="lightbox-cap"></figcaption></figure>
+        <span class="lb-close">✕ klik di mana saja untuk menutup</span>
+    </section>
+
+    <!-- ===================== BUKU SEJARAH ===================== -->
+    <section id="book" class="screen dim hidden">
+        <div class="book glass">
+            <div class="book-head">
+                <div><h2>📖 Buku Sejarah</h2><p id="book-sub">Temui atau kalahkan tokoh untuk mengisi halaman.</p></div>
+                <div class="book-filters" id="book-filters"></div>
+                <button id="book-close" class="btn glass icon" type="button" aria-label="Tutup">✕</button>
+            </div>
+            <div class="book-body">
+                <div class="book-grid" id="book-grid"></div>
+                <article class="book-detail" id="book-detail"><p class="muted">Pilih kartu yang sudah terkoleksi untuk membaca kisahnya.</p></article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== TIM ===================== -->
+    <section id="champion" class="screen dim hidden">
+        <div class="champ glass">
+            <div class="book-head">
+                <div><h2>👥 Pilih Petarung</h2><p>Kamu bisa bertarung sendiri, atau meminta bantuan pahlawan yang sudah kau kalahkan.</p></div>
+                <button id="champ-close" class="btn glass icon" type="button" aria-label="Tutup">✕</button>
+            </div>
+            <div class="champ-grid" id="champ-grid"></div>
+        </div>
+    </section>
+
+    <!-- ===================== MENU ===================== -->
+    <section id="menu" class="screen dim hidden">
+        <div class="panel glass menu-card">
+            <h2>Menu</h2>
+            <button type="button" class="btn glass wide" id="menu-resume">▶ Lanjut main</button>
+            <button type="button" class="btn glass wide" id="menu-help">❓ Cara bermain</button>
+            <button type="button" class="btn glass wide" id="menu-mode">🔀 Ganti mode</button>
+            <button type="button" class="btn glass wide" id="menu-look">🎨 Ubah penampilan</button>
+            <button type="button" class="btn glass wide" id="menu-time">🌗 Waktu: berganti otomatis</button>
+            <button type="button" class="btn glass wide" id="menu-gfx">✨ Grafis: megah</button>
+            <button type="button" class="btn glass wide" id="menu-music">🎵 Musik lira: nyala</button>
+            <button type="button" class="btn glass wide" id="menu-spawn">🏛️ Kembali ke Persimpangan</button>
+            <button type="button" class="btn glass wide" id="menu-logout">🚪 Keluar akun</button>
+        </div>
+    </section>
+
+    <section id="help" class="screen dim hidden">
+        <div class="help glass">
+            <h2>Cara Bermain</h2>
+            <ol>
+                <li><b>Jalan:</b> WASD / panah · <b>Lari:</b> Shift · <b>Lompat:</b> Spasi · <b>Kamera:</b> seret mouse, gulir untuk zoom. Di HP pakai joystick kiri & seret layar kanan.</li>
+                <li><b>Peta pulau:</b> Gunung Olympus (utara) · Padang Legenda (barat laut) · Kemah Yunani & kapal (barat) · Kota Troya bertembok (timur) · Pesisir Odyssey (tenggara) · Alam Liar Mitos (barat daya).</li>
+                <li><b>Mode Jelajah:</b> dekati tokoh dan tekan <b>E</b> untuk menyapa — kisahnya tercatat di Buku Sejarah. Tekan <b>F</b> untuk terbang dengan sayap Hermes (Spasi naik, C turun, Shift melesat).</li>
+                <li><b>Buku Sejarah:</b> lihat bentuk balok 3D setiap tokoh dan pakai tombol <b>Teleport</b> untuk langsung ke tempatnya.</li>
+                <li><b>Mode Bertarung:</b> tekan <b>E</b> untuk menantang. Tokoh bertanda <b class="red">⚔</b> agresif dan akan mengejarmu!</li>
+                <li><b>Jurus:</b> Kekuatan (serangan besar) · Kecepatan (serangan cepat + 50% menghindar) · Taktik (bertahan & membalas) · Kharisma (berkah dewa — <b>setelahnya kamu diam satu giliran</b>, seperti memakai potion di Pokémon).</li>
+                <li><b>Keunggulan:</b> Aggressive ▶ Technical ▶ Evasive ▶ Aggressive (×1.5) · Air ▶ Api ▶ Bumi ▶ Petir ▶ Air (×1.25) · sesuai kisah mitos (×1.2). HP di bawah 20%: Ultimate terbuka sekali.</li>
+                <li><b>Tempat Menarik:</b> cari Pasar Agora, Desa Petani, Ladang Barat, Teater Dionysus, dan Tholos Delphi — tanda <b>?</b> di peta kecil. Kamera otomatis mendekat bila tertutup bangunan.</li>
+                <li>Setiap 4 tokoh terkoleksi, levelmu naik. Kumpulkan semua untuk membuka rahasia terakhir…</li>
+            </ol>
+            <button id="help-close" class="btn btn-primary" type="button">Siap!</button>
+        </div>
+    </section>
+
+    <!-- ===================== SECRET ENDING ===================== -->
+    <section id="ending" class="screen hidden">
+        <div class="letter glass">
+            <span class="cut-tag">THE ULTIMATE LEGACY · 120/120</span>
+            <h2>Pesan dari Ayah</h2>
+            <!--
+                ================================================================
+                TULIS PESAN PRIBADIMU DI SINI 👇
+                Ganti isi <div id="letter-body"> di bawah dengan pesan untuk anakmu.
+                Boleh pakai <p>…</p> untuk paragraf baru.
+                ================================================================
+            -->
+            <div id="letter-body" class="letter-body">
+                <p>Nak,</p>
+                <p>Kalau kamu membaca ini, berarti kamu sudah menamatkan seluruh kisah — dari Achilles yang perkasa sampai Penelope yang sabar. Ayah membuat dunia kecil ini untukmu.</p>
+                <p>[Tulis pesan Ayah di sini…]</p>
+                <p class="sign">— Ayah (Zhovaga)</p>
+            </div>
+            <button id="ending-close" class="btn btn-primary" type="button">🌍 Kembali ke dunia</button>
+        </div>
+    </section>
+
+    <div id="fade" class="fade"></div>
+    <div id="toast" class="toast glass hidden"></div>
+
+    <!-- Semua file lokal: bisa dibuka langsung lewat file:///…/index.html tanpa server & tanpa internet -->
+    <script src="vendor/three.bundle.js"></script>
+    <script src="blockhero.js"></script>
+    <script src="portraits.js"></script>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <script src="megah.js"></script>
+    <script src="dunia5.js"></script>
+</body>
+</html>
